@@ -1,9 +1,10 @@
 <template>
   <div class="gpx-input-total">
-    <span>GPX</span>
     <v-file-input
+        prepend-icon="mdi-crosshairs-gps"
         accept="application/gpx+xml"
-        @change="readGPXFile"> </v-file-input>
+        placeholder="select GPX File"
+        @change="readGPXFile"></v-file-input>
   </div>
 </template>
 

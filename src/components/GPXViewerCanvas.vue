@@ -1,14 +1,20 @@
 <template>
   <div>
     <canvas ref="mcanvas" style="width: 100%; padding: 0px;"
-            @mousemove="drag"
-            @mousedown="isDrag = true"
-            @mouseleave="isDrag = false"
-            @mouseup="isDrag = false"
-            @mouseout="isDrag = false"
+            @mousemove.stop.prevent="drag"
+            @mousedown.stop.prevent="isDrag = true"
+            @mouseleave.stop.prevent="isDrag = false"
+            @mouseup.stop.prevent="isDrag = false"
+            @mouseout.stop.prevent="isDrag = false"
+            @touchstart.stop.prevent="isDrag = true"
+            @touchend.stop.prevent="isDrag = false"
+            @touchdown.stop.prevent="isDrag = true"
+            @touchup.stop.prevent="isDrag = false"
+            @touchmove.stop.prevent="drag"
+            v-touch:moving.stop.prevent="drag"
     ></canvas>
-
     <v-file-input
+        prepend-icon="mdi-camera"
         placeholder="Image"
         accept="image/*"
         @change="readImageFile"
@@ -39,7 +45,7 @@ export default {
   },
   data: () => ({
     mCanvas: null, ctx: null, targetImg: null, isDrag: false,
-    position: {x: 0, y:0}
+    position: {x: 0, y:0},
   }),
   mounted() {
     this.mCanvas = this.$refs['mcanvas']
@@ -47,9 +53,18 @@ export default {
   },
   methods: {
     drag(evt) {
-      if(this.isDrag) {
-        this.position.x = evt.offsetX * this.targetImg.naturalWidth / this.mCanvas.clientWidth
-        this.position.y = evt.offsetY * this.targetImg.naturalHeight / this.mCanvas.clientHeight
+      if(this.isDrag && this.targetImg) {
+        const rect = evt.target.getBoundingClientRect()
+        let x, y
+        if(evt.targetTouches && evt.targetTouches[0]) {
+          x = evt.targetTouches[0].pageX - rect.left
+          y = evt.targetTouches[0].pageY - rect.top
+        } else {
+          x = evt.offsetX
+          y = evt.offsetY
+        }
+        this.position.x = x * this.targetImg.naturalWidth / this.mCanvas.clientWidth
+        this.position.y = y * this.targetImg.naturalHeight / this.mCanvas.clientHeight
         this.drawTotal(this.position.x, this.position.y)
       }
     },
@@ -151,7 +166,16 @@ export default {
       await this.$nextTick()
       const longEdge = Math.max(this.mCanvas.width, this.mCanvas.height)
       this.viewOption.svgDimensions = longEdge/5
-    }
+    },
+    download() {
+      let dataURL = this.mCanvas.toDataURL('image/png');
+      dataURL = dataURL.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
+      dataURL = dataURL.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
+      const aTag = document.createElement('a');
+      aTag.download = 'from_canvas.png';
+      aTag.href = dataURL;
+      aTag.click();
+    },
   },
   computed: {
     fontSize () { return this.viewOption.svgDimensions / 4 },
@@ -172,6 +196,10 @@ export default {
     viewOption: {
       deep: true,
       handler: function() { this.drawTotal(this.position.x, this.position.y) }
+    },
+    targetImg: function(n) {
+      if(n) this.$emit('downloadable', true)
+      else this.$emit('downloadable', false)
     }
   }
 }

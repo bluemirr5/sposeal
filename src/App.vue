@@ -1,6 +1,13 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark > SpoSeal </v-app-bar>
+    <v-app-bar app color="primary" dark >
+      SpoSeal
+      <v-spacer></v-spacer>
+      <v-btn v-if="isDownload" @click="download">
+        Save
+        <v-icon>mdi-content-save</v-icon>
+      </v-btn>
+    </v-app-bar>
     <v-main >
       <div  style="padding: 0 10px">
         <gpx-input @loadedGPX="loadedGPXInfo"></gpx-input>
@@ -17,29 +24,17 @@
         />
         <v-spacer></v-spacer>
         <gpx-viewer-canvas
+            ref="canvasViewer"
             v-if="gpxInfo"
             :title="gpxInfo.title"
             :distance="gpxInfo.distance"
             :do-time="gpxInfo.doTime"
             :line-data="gpxInfo.lineData"
             :view-option="viewOption"
+            @downloadable="downloadChange"
         />
-<!--        <gpx-viewer-->
-<!--            v-if="gpxInfo"-->
-<!--            :title="gpxInfo.title"-->
-<!--            :distance="gpxInfo.distance"-->
-<!--            :do-time="gpxInfo.doTime"-->
-<!--            :line-data="gpxInfo.lineData"-->
-<!--            :view-option="viewOption"-->
-<!--            @drawComplete="loadedSVG"-->
-<!--        />-->
-<!--        <image-input-->
-<!--            v-if="gpxInfo && svg"-->
-<!--            :svg-xml="svg"-->
-<!--        />-->
-        <!--            :svg="svg"-->
       </div>
-      <div>
+      <div style="margin-top: 50px">
         <span style="font-family: kimue,serif"></span>
         <span style="font-family: ainmom,serif"></span>
         <span style="font-family: zumggolche,serif"></span>
@@ -69,14 +64,18 @@ export default {
       isGradation: true,
       fontFamily: 'kimue'
     },
-    svg: null
+    svg: null,
+    isDownload: false
   }),
   methods: {
     loadedGPXInfo(gpxInfo) {
       this.gpxInfo = gpxInfo
     },
-    loadedSVG(svg) {
-      this.svg = svg
+    downloadChange(flag) {
+      this.isDownload = flag
+    },
+    download() {
+      this.$refs['canvasViewer'].download()
     }
   }
 };
