@@ -61,9 +61,9 @@ export default {
         imgObj.src = event.target.result
         await this.$nextTick()
         this.targetImage = imgObj
-        await this.drawImgSvg()
+        // await this.drawImgSvg()
       }
-      reader.readAsDataURL(imgFile)
+      if(imgFile) reader.readAsDataURL(imgFile)
     }
   },
   watch: {

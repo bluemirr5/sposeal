@@ -18,10 +18,10 @@ export default {
     readGPXFile(f) {
       console.log(f.type)
       if(f) {
-        if(f.type !== 'application/gpx+xml') {
-          alert('gpx 파일형식만 가능합니다.')
-          return
-        }
+        // if(f.type !== 'application/gpx+xml') {
+        //   alert('gpx 파일형식만 가능합니다.')
+        //   return
+        // }
         const reader = new FileReader()
         reader.onload = (event) => {
           this.readGPX(event.target.result)

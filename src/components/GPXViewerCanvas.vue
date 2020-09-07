@@ -1,7 +1,12 @@
 <template>
   <div>
-    <div v-bind:style="{'font-family': viewOption.fontFamily}"></div>
-    <canvas ref="mcanvas"></canvas>
+    <canvas ref="mcanvas" style="width: 100%; padding: 0px;"></canvas>
+
+    <v-file-input
+        placeholder="Image"
+        accept="image/*"
+        @change="readImageFile"
+    />
   </div>
 </template>
 
@@ -26,24 +31,37 @@ export default {
       }
     },
   },
-  data: () => ({
-    mCanvas: null,
-  }),
+  data: () => ({ mCanvas: null, ctx: null, targetImg: null}),
   mounted() {
     this.mCanvas = this.$refs['mcanvas']
     this.drawTotal()
   },
   methods: {
-    drawTotal() {
-      const ctx = this.mCanvas.getContext('2d')
-      this.mCanvas.width = this.viewOption.svgDimensions * 3.6
-      this.mCanvas.height = this.viewOption.svgDimensions
-      this.$nextTick(() => {
-        const grad = this.makeGradation(ctx, this.viewOption.svgDimensions, this.viewOption.svgDimensions)
-        this.drawPath(ctx, grad, this.viewOption)
-        const grad2 = this.makeGradation(ctx, this.viewOption.svgDimensions, this.viewOption.svgDimensions, this.viewOption.svgDimensions * 2.6 )
-        this.drawInfo(ctx, grad2, this.viewOption)
-      })
+    async drawTotal() {
+      this.mCanvas.getContext("2d").clearRect(0, 0, this.mCanvas.width, this.mCanvas.height)
+      if(this.targetImg) {
+        this.mCanvas.width = this.targetImg.naturalWidth
+        this.mCanvas.height = this.targetImg.naturalHeight
+        await this.$nextTick()
+        this.ctx = this.mCanvas.getContext('2d')
+        await this.$nextTick()
+        await this.drawImg(this.targetImg)
+        this.$nextTick()
+        await this.drawSealTotal()
+      } else {
+        this.mCanvas.width = this.viewOption.svgDimensions * 3.6
+        this.mCanvas.height = this.viewOption.svgDimensions
+        await this.$nextTick()
+        this.ctx = this.mCanvas.getContext('2d')
+        await this.$nextTick()
+        await this.drawSealTotal()
+      }
+    },
+    async drawSealTotal() {
+      const grad = this.makeGradation(this.ctx, this.viewOption.svgDimensions, this.viewOption.svgDimensions)
+      this.drawPath(this.ctx, grad, this.viewOption)
+      const grad2 = this.makeGradation(this.ctx, this.viewOption.svgDimensions, this.viewOption.svgDimensions, this.viewOption.svgDimensions * 2.6 )
+      this.drawInfo(this.ctx, grad2, this.viewOption)
     },
     makeGradation(ctx, w, h, sx, sy) {
       const x = sx ? sx : 0
@@ -90,8 +108,23 @@ export default {
         }
       })
       ctx.stroke()
-
       ctx.closePath()
+    },
+    readImageFile(imgFile) {
+      const imgObj = new Image();
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        imgObj.src = event.target.result
+        await this.$nextTick()
+        this.targetImg = imgObj
+        await this.drawTotal()
+      }
+      if(imgFile) reader.readAsDataURL(imgFile)
+    },
+    async drawImg(targetImage) {
+      this.ctx.drawImage(targetImage, 0, 0)
+      await this.$nextTick()
+      this.viewOption.svgDimensions = this.mCanvas.width/5
     }
   },
   computed: {
@@ -118,6 +151,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -24,19 +24,19 @@
             :line-data="gpxInfo.lineData"
             :view-option="viewOption"
         />
-        <gpx-viewer
-            v-if="gpxInfo"
-            :title="gpxInfo.title"
-            :distance="gpxInfo.distance"
-            :do-time="gpxInfo.doTime"
-            :line-data="gpxInfo.lineData"
-            :view-option="viewOption"
-            @drawComplete="loadedSVG"
-        />
-        <image-input
-            v-if="gpxInfo && svg"
-            :svg-xml="svg"
-        />
+<!--        <gpx-viewer-->
+<!--            v-if="gpxInfo"-->
+<!--            :title="gpxInfo.title"-->
+<!--            :distance="gpxInfo.distance"-->
+<!--            :do-time="gpxInfo.doTime"-->
+<!--            :line-data="gpxInfo.lineData"-->
+<!--            :view-option="viewOption"-->
+<!--            @drawComplete="loadedSVG"-->
+<!--        />-->
+<!--        <image-input-->
+<!--            v-if="gpxInfo && svg"-->
+<!--            :svg-xml="svg"-->
+<!--        />-->
         <!--            :svg="svg"-->
       </div>
       <div>
@@ -52,14 +52,14 @@
 
 <script>
 import gpxInput from '@/components/GPXInput'
-import gpxViewer from '@/components/GPXViewer'
+// import gpxViewer from '@/components/GPXViewer'
 import gpxViewerCanvas from '@/components/GPXViewerCanvas'
 import gpxViewOptionPicker from '@/components/GPXViewOptionPicker'
-import imageInput from '@/components/ImageInput'
+// import imageInput from '@/components/ImageInput'
 
 export default {
   name: 'App',
-  components: { gpxInput, gpxViewer, gpxViewerCanvas, gpxViewOptionPicker, imageInput},
+  components: { gpxInput,  gpxViewerCanvas, gpxViewOptionPicker,}, //gpxViewer, imageInput},
   data: () => ({
     gpxInfo: null,
     viewOption: {
