@@ -1,6 +1,12 @@
 <template>
   <div>
-    <canvas ref="mcanvas" style="width: 100%; padding: 0px;"></canvas>
+    <canvas ref="mcanvas" style="width: 100%; padding: 0px;"
+            @mousemove="drag"
+            @mousedown="isDrag = true"
+            @mouseleave="isDrag = false"
+            @mouseup="isDrag = false"
+            @mouseout="isDrag = false"
+    ></canvas>
 
     <v-file-input
         placeholder="Image"
@@ -31,13 +37,23 @@ export default {
       }
     },
   },
-  data: () => ({ mCanvas: null, ctx: null, targetImg: null}),
+  data: () => ({
+    mCanvas: null, ctx: null, targetImg: null, isDrag: false,
+    position: {x: 0, y:0}
+  }),
   mounted() {
     this.mCanvas = this.$refs['mcanvas']
     this.drawTotal()
   },
   methods: {
-    async drawTotal() {
+    drag(evt) {
+      if(this.isDrag) {
+        this.position.x = evt.offsetX * this.targetImg.naturalWidth / this.mCanvas.clientWidth
+        this.position.y = evt.offsetY * this.targetImg.naturalHeight / this.mCanvas.clientHeight
+        this.drawTotal(this.position.x, this.position.y)
+      }
+    },
+    async drawTotal(x, y) {
       this.mCanvas.getContext("2d").clearRect(0, 0, this.mCanvas.width, this.mCanvas.height)
       if(this.targetImg) {
         this.mCanvas.width = this.targetImg.naturalWidth
@@ -47,7 +63,7 @@ export default {
         await this.$nextTick()
         await this.drawImg(this.targetImg)
         this.$nextTick()
-        await this.drawSealTotal()
+        await this.drawSealTotal(x, y)
       } else {
         this.mCanvas.width = this.viewOption.svgDimensions * 3.6
         this.mCanvas.height = this.viewOption.svgDimensions
@@ -57,31 +73,40 @@ export default {
         await this.drawSealTotal()
       }
     },
-    async drawSealTotal() {
-      const grad = this.makeGradation(this.ctx, this.viewOption.svgDimensions, this.viewOption.svgDimensions)
-      this.drawPath(this.ctx, grad, this.viewOption)
-      const grad2 = this.makeGradation(this.ctx, this.viewOption.svgDimensions, this.viewOption.svgDimensions, this.viewOption.svgDimensions * 2.6 )
-      this.drawInfo(this.ctx, grad2, this.viewOption)
+    async drawSealTotal(x, y) {
+      const tx = x? x : 0
+      const ty = y? y : 0
+      const grad = await this.makeGradation(this.ctx, this.viewOption.svgDimensions, this.viewOption.svgDimensions, tx, ty)
+      await this.drawPath(this.ctx, grad, this.viewOption, tx, ty)
+      const grad2 = await this.makeGradation(this.ctx, this.viewOption.svgDimensions * 2.6, this.viewOption.svgDimensions, this.viewOption.svgDimensions + tx, ty, true)
+      await this.drawInfo(this.ctx, grad2, this.viewOption, tx, ty)
     },
-    makeGradation(ctx, w, h, sx, sy) {
-      const x = sx ? sx : 0
-      const y = sy? sy : 0
-      const grad = ctx.createLinearGradient(x, y, w, h);
-      grad.addColorStop(0, this.viewOption.firstColor);
-      grad.addColorStop(1, this.viewOption.secondColor);
+    makeGradation(ctx, w, h, sx, sy, reverse) {
+      const grad = ctx.createLinearGradient(sx, sy, sx + w, sy + h)
+      if(reverse) {
+        grad.addColorStop(0, this.viewOption.secondColor);
+        grad.addColorStop(0.5, this.viewOption.firstColor);
+      } else {
+        grad.addColorStop(0, this.viewOption.firstColor);
+        grad.addColorStop(1, this.viewOption.secondColor);
+      }
       return grad
     },
-    drawInfo(ctx, grad, viewOption) {
-      const marginx = viewOption.svgDimensions*(1+1/10)
+    drawInfo(ctx, grad, viewOption, sx, sy) {
+      const ax = sx ? sx : 0
+      const ay = sy? sy : 0
+      const marginx = viewOption.svgDimensions*(1+1/10) + ax
       if(grad) ctx.fillStyle = grad
       else ctx.fillStyle = viewOption.firstColor
 
       ctx.font = '700 ' + this.fontSize+'px ' + viewOption.fontFamily
-      ctx.fillText(this.title, marginx, this.fontSize * 1 + (viewOption.svgDimensions-this.fontSize*3)/2.5)
-      ctx.fillText('- ' + this.distance.toFixed(2) + 'Km', marginx, this.fontSize * 2 + (viewOption.svgDimensions-this.fontSize*3)/2.5)
-      ctx.fillText('- ' + this.doTime, marginx, this.fontSize * 3 + (viewOption.svgDimensions-this.fontSize*3)/2.5)
+      ctx.fillText(this.title, marginx, this.fontSize * 1 + (viewOption.svgDimensions-this.fontSize*3)/2.5 + ay)
+      ctx.fillText('- ' + this.distance.toFixed(2) + 'Km', marginx, this.fontSize * 2 + (viewOption.svgDimensions-this.fontSize*3)/2.5 + ay)
+      ctx.fillText('- ' + this.doTime, marginx, this.fontSize * 3 + (viewOption.svgDimensions-this.fontSize*3)/2.5 + ay)
     },
-    drawPath(ctx, grad, viewOption) {
+    drawPath(ctx, grad, viewOption, sx, sy) {
+      const ax = sx ? sx : 0
+      const ay = sy? sy : 0
       ctx.beginPath()
       ctx.lineWidth = this.strokeWidth
       if(grad) ctx.strokeStyle = grad
@@ -89,7 +114,7 @@ export default {
 
       //원 그리기
       const center = viewOption.svgDimensions / 2
-      ctx.arc(center, center, center - this.strokeWidth, 0, Math.PI * 2, true)
+      ctx.arc(center + ax, center + ay, center - this.strokeWidth, 0, Math.PI * 2, true)
       ctx.stroke()
 
       // 경로 그리기
@@ -97,8 +122,8 @@ export default {
       const tr = (viewOption.svgDimensions - pathDimension) / 2 - this.strokeWidth / 2 // 실제 경로의 시작점
       let tx, ty, firstFlag = true
       this.lineData.forEach(it => {
-        tx = ( it.x - this.bound.xMin) / (this.bound.xMax - this.bound.xMin)  * pathDimension + tr
-        ty = ( 1 - (it.y - this.bound.yMin) / (this.bound.yMax - this.bound.yMin) ) * pathDimension + tr
+        tx = ( it.x - this.bound.xMin) / (this.bound.xMax - this.bound.xMin)  * pathDimension + tr + ax
+        ty = ( 1 - (it.y - this.bound.yMin) / (this.bound.yMax - this.bound.yMin) ) * pathDimension + tr + ay
         if(firstFlag){
           ctx.moveTo(tx, ty)
           firstFlag = false
@@ -124,7 +149,8 @@ export default {
     async drawImg(targetImage) {
       this.ctx.drawImage(targetImage, 0, 0)
       await this.$nextTick()
-      this.viewOption.svgDimensions = this.mCanvas.width/5
+      const longEdge = Math.max(this.mCanvas.width, this.mCanvas.height)
+      this.viewOption.svgDimensions = longEdge/5
     }
   },
   computed: {
@@ -141,11 +167,11 @@ export default {
     }
   },
   watch: {
-    lineData: function() { this.drawTotal() },
-    title: function () { this.drawTotal() },
+    lineData: function() { this.drawTotal(this.position.x, this.position.y) },
+    title: function () { this.drawTotal(this.position.x, this.position.y) },
     viewOption: {
       deep: true,
-      handler: function() { this.drawTotal() }
+      handler: function() { this.drawTotal(this.position.x, this.position.y) }
     }
   }
 }
