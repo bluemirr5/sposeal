@@ -47,10 +47,8 @@
 
 <script>
 import gpxInput from '@/components/GPXInput'
-// import gpxViewer from '@/components/GPXViewer'
 import gpxViewerCanvas from '@/components/GPXViewerCanvas'
 import gpxViewOptionPicker from '@/components/GPXViewOptionPicker'
-// import imageInput from '@/components/ImageInput'
 
 export default {
   name: 'App',
