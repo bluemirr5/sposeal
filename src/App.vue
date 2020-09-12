@@ -9,80 +9,30 @@
       </v-btn>
     </v-app-bar>
     <v-main >
-      <div  style="padding: 0 10px">
-        <gpx-input @loadedGPX="loadedGPXInfo"></gpx-input>
-        <gpx-view-option-picker
-            v-if="gpxInfo"
-            v-model="viewOption"
-        />
-        <v-text-field
-            single-line
-            style="margin-top: 20px;"
-            label="제목"
-            v-if="gpxInfo"
-            v-model.lazy="gpxInfo.title"
-        />
-        <v-spacer></v-spacer>
-        <gpx-viewer-canvas
-            ref="canvasViewer"
-            v-if="gpxInfo"
-            :title="gpxInfo.title"
-            :distance="gpxInfo.distance"
-            :do-time="gpxInfo.doTime"
-            :line-data="gpxInfo.lineData"
-            :view-option="viewOption"
-            @downloadable="downloadChange"
-        />
-      </div>
-      <div style="margin-top: 50px">
-        <span style="font-family: kimue,serif"></span>
-        <span style="font-family: ainmom,serif"></span>
-        <span style="font-family: zumggolche,serif"></span>
-        <span style="font-family: amsterdam,serif"></span>
-        <span style="font-family: jungeunche,serif"></span>
-      </div>
+      <router-view/>
     </v-main>
   </v-app>
 </template>
 
-<script>
-import gpxInput from '@/components/GPXInput'
-import gpxViewerCanvas from '@/components/GPXViewerCanvas'
-import gpxViewOptionPicker from '@/components/GPXViewOptionPicker'
+<style lang="scss">
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 
-export default {
-  name: 'App',
-  components: { gpxInput,  gpxViewerCanvas, gpxViewOptionPicker,}, //gpxViewer, imageInput},
-  data: () => ({
-    gpxInfo: null,
-    viewOption: {
-      svgDimensions:  100,
-      lineStyle: null,
-      firstColor: '#248A90', secondColor: '#EF0D0D',
-      isGradation: true,
-      fontFamily: 'kimue'
-    },
-    svg: null,
-    isDownload: false
-  }),
-  methods: {
-    loadedGPXInfo(gpxInfo) {
-      this.gpxInfo = gpxInfo
-    },
-    downloadChange(flag) {
-      this.isDownload = flag
-    },
-    download() {
-      this.$refs['canvasViewer'].download()
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
     }
   }
-};
-</script>
-
-<style>
-  @font-face { font-family: "kimue"; src: url("assets/fonts/kimue.ttf") format("truetype"); }
-  @font-face { font-family: "ainmom"; src: url("assets/fonts/ainmom.ttf") format("truetype"); }
-  @font-face { font-family: "zumggolche"; src: url("assets/fonts/zumggolche.ttf") format("truetype"); }
-  @font-face { font-family: "amsterdam"; src: url("assets/fonts/amsterdam.ttf") format("truetype"); }
-  @font-face { font-family: "jungeunche"; src: url("assets/fonts/jungeunche.ttf") format("truetype"); }
+}
 </style>
