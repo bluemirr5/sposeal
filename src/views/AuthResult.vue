@@ -14,14 +14,12 @@ export default {
       authInfo.code = this.$route.query.code
       authInfo.getToken().then(
         resp => {
-          authInfo.auth = resp.data
-          window.console.log(resp.data)
-          alert('인증 ')
+          authInfo.setAuth(resp.data)
           this.$router.replace('/')
         },
         error => {
           alert('인증에 실패하였습니다.')
-          window.console.log(error.response)
+          window.console.error(error.response)
         }
       )
     }

@@ -27,7 +27,6 @@ export default {
     },
     download() {
       this.$refs['router'].download()
-      // window.console.log(this.$refs['router'])
     }
   }
 }

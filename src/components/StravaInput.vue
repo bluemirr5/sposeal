@@ -1,8 +1,7 @@
 <template>
   <div>
-    <v-btn v-if="!authInfo || !authInfo.auth" @click="linkStrava">Strava Login</v-btn>
-
-    <v-dialog v-if="authInfo && authInfo.auth"  v-model="dialog" scrollable max-width="300px">
+    <v-btn v-if="!hasToken" @click="linkStrava">Strava Login</v-btn>
+    <v-dialog v-else  v-model="dialog" scrollable max-width="300px">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
             v-bind="attrs"
@@ -41,7 +40,6 @@
         </v-card>
       </v-card>
     </v-dialog>
-<!--    <v-btn v-if="authInfo && authInfo.auth" @click="selectActivity">Select Activity</v-btn>-->
   </div>
 </template>
 
@@ -57,7 +55,25 @@ export default {
     dialog: false,
     items: [],
     item: null,
+    hasToken: false,
   }),
+  created() {
+    const auth = this.authInfo.getAuth()
+    if(auth) {
+      const expireMoment = moment(new Date(auth.expires_at*1000))
+      const curMoment = moment()
+      const expired = !expireMoment.isAfter(curMoment)
+      this.hasToken = auth && expireMoment.isAfter(curMoment)
+      if(expired) {
+        this.authInfo.refreshAuth().then(() => {
+          this.hasToken = !!this.authInfo.getAuth()
+        }, error => {
+          this.authInfo.clearAuth()
+          window.console.error(error.response)
+        })
+      }
+    }
+  },
   methods: {
     linkStrava() {
       window.location.href = authInfo.authorize()
@@ -72,9 +88,7 @@ export default {
     },
     selectActivity(item) {
       this.dialog = false
-      window.console.log(item.id)
       authInfo.apiRouter(item.id).then(resp => {
-        window.console.log(resp.data)
         const latlng = resp.data.find(it => it.type === 'latlng')
         const lineData = latlng.data.map(it => ({x: it[0], y: it[1]}))
         const gpxData = {
@@ -95,9 +109,6 @@ export default {
     convertDate(date) {
       return moment(date).format('M.D')
     },
-
-
-
   },
 }
 </script>
