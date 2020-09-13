@@ -1,10 +1,14 @@
 <template>
   <div class="gpx-input-total">
     <v-file-input
+        ref="fInput"
         prepend-icon="mdi-crosshairs-gps"
         accept="application/gpx+xml"
-        placeholder="select GPX File"
-        @change="readGPXFile"></v-file-input>
+        placeholder="GPX File"
+        @change="readGPXFile"
+        :hide-details="true"
+        :dense="true"
+    > </v-file-input>
   </div>
 </template>
 
@@ -15,6 +19,7 @@ import util from '@/common/util'
 
 export default {
   name: "GPXInput",
+  data: () => ({ fileName: '' }),
   methods: {
     readGPXFile(f) {
       console.log(f.type)

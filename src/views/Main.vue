@@ -1,8 +1,14 @@
 <template>
   <div>
     <div style="padding: 0 10px">
-      <v-btn @click="linkStrava">Strava</v-btn>
-      <gpx-input @loadedGPX="loadedGPXInfo"></gpx-input>
+      <div class="d-flex flex-row mb-6">
+        <div class="pa-2" style="padding: 10px">
+          <strava-input @loadedGPX="loadedGPXInfo" style="margin-top: 10px;"/>
+        </div>
+        <div class="pa-2">
+          <gpx-input @loadedGPX="loadedGPXInfo"></gpx-input>
+        </div>
+      </div>
       <v-text-field
           single-line
           label="제목"
@@ -35,13 +41,14 @@
 </template>
 
 <script>
+import stravaInput from '@/components/StravaInput'
 import gpxInput from '@/components/GPXInput'
 import gpxViewerCanvas from '@/components/GPXViewerCanvas'
 import gpxViewOptionPicker from '@/components/GPXViewOptionPicker'
 
 export default {
   name: 'Main',
-  components: { gpxInput,  gpxViewerCanvas, gpxViewOptionPicker,}, //gpxViewer, imageInput},
+  components: { stravaInput, gpxInput,  gpxViewerCanvas, gpxViewOptionPicker,}, //gpxViewer, imageInput},
   data: () => ({
     gpxInfo: null,
     viewOption: {
@@ -51,15 +58,10 @@ export default {
       isGradation: true,
       fontFamily: 'kimue'
     },
-    svg: null,
-    isDownload: false
   }),
   methods: {
-    linkStrava() {
-
-    },
     loadedGPXInfo(gpxInfo) { this.gpxInfo = gpxInfo },
-    downloadChange(flag) { this.isDownload = flag },
+    downloadChange(flag) { this.$emit('downloadable', flag ) },
     download() { this.$refs['canvasViewer'].download() }
   }
 };

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '@/views/Main.vue'
-import AuthResult from "@/components/AuthResult";
+import AuthResult from "@/views/AuthResult";
 
 Vue.use(VueRouter)
 

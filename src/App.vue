@@ -9,10 +9,29 @@
       </v-btn>
     </v-app-bar>
     <v-main >
-      <router-view/>
+      <router-view ref="router" @downloadable="downCheck" />
     </v-main>
   </v-app>
 </template>
+
+<script>
+
+export default {
+  name: 'App',
+  data: () => ({
+    isDownload: false
+  }),
+  methods: {
+    downCheck(flag) {
+      this.isDownload = flag
+    },
+    download() {
+      this.$refs['router'].download()
+      // window.console.log(this.$refs['router'])
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 #app {

@@ -1,0 +1,107 @@
+<template>
+  <div>
+    <v-btn v-if="!authInfo || !authInfo.auth" @click="linkStrava">Strava Login</v-btn>
+
+    <v-dialog v-if="authInfo && authInfo.auth"  v-model="dialog" scrollable max-width="300px">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+            v-bind="attrs"
+            v-on="on"
+            @click="loadActivity"
+        >
+          Select Activity
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>Select Activity</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text style="height: 300px;" v-if="items">
+          <v-list rounded dense>
+            <v-list-item-group v-model="item" color="primary">
+              <v-list-item
+                  v-for="(item, i) in items"
+                  :key="i"
+                  @click="selectActivity(item)"
+              >
+                <v-list-item-content style="text-align: left">
+                  <v-list-item-title>
+                    <span>{{ item.name }}</span>&nbsp;-&nbsp;
+                    <span>{{ convertDate(item.start_date) }}</span>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-card-text>
+        <v-card v-else>
+          <v-progress-circular
+              indeterminate
+              color="primary"
+          ></v-progress-circular>
+        </v-card>
+      </v-card>
+    </v-dialog>
+<!--    <v-btn v-if="authInfo && authInfo.auth" @click="selectActivity">Select Activity</v-btn>-->
+  </div>
+</template>
+
+<script>
+import authInfo from '@/common/authInfo'
+import moment from 'moment'
+import util from "@/common/util"
+
+export default {
+  name: "StravaInput",
+  data: () =>({
+    authInfo,
+    dialog: false,
+    items: [],
+    item: null,
+  }),
+  methods: {
+    linkStrava() {
+      window.location.href = authInfo.authorize()
+    },
+    loadActivity() {
+      authInfo.apiActivities().then(resp => {
+        this.items = resp.data
+      }, error => {
+        alert('활동 데이터를 가져오지 못했습니다. ')
+        window.console.error(error.response)
+      })
+    },
+    selectActivity(item) {
+      this.dialog = false
+      window.console.log(item.id)
+      authInfo.apiRouter(item.id).then(resp => {
+        window.console.log(resp.data)
+        const latlng = resp.data.find(it => it.type === 'latlng')
+        const lineData = latlng.data.map(it => ({x: it[0], y: it[1]}))
+        const gpxData = {
+          lineData,
+          title: item.name,
+          distance: item.distance/1000,
+          avgSpeed: ( item.average_speed* 3.6),
+          totalTime: util.getTime(item.elapsed_time),
+          doTime: util.getTime(item.moving_time),
+          restTime: util.getTime(item.elapsed_time - item.moving_time)
+        }
+        this.$emit('loadedGPX', gpxData)
+      }, err => {
+        window.console.error(err.response)
+        alert('활동 데이터를 가져오지 못했습니다. ')
+      })
+    },
+    convertDate(date) {
+      return moment(date).format('M.D')
+    },
+
+
+
+  },
+}
+</script>
+
+<style scoped>
+
+</style>
