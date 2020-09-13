@@ -1,15 +1,16 @@
 <template>
   <div>
     <div style="padding: 0 10px">
-      <div class="d-flex flex-row mb-6">
+      <div class="d-flex flex-row mb-6" style="margin-bottom: 0 !important;">
         <div class="pa-2" style="padding: 10px">
-          <strava-input @loadedGPX="loadedGPXInfo" style="margin-top: 10px;"/>
+          <gpx-input @loadedGPX="loadedGPXInfo"></gpx-input>
         </div>
         <div class="pa-2">
-          <gpx-input @loadedGPX="loadedGPXInfo"></gpx-input>
+          <strava-input @loadedGPX="loadedGPXInfo" style="margin-top: 10px;"/>
         </div>
       </div>
       <v-text-field
+          style="margin: 0; padding: 0;"
           single-line
           label="제목"
           v-if="gpxInfo"

@@ -1,7 +1,7 @@
 export default {
   host:'https://www.strava.com',
-  client_id: '53545',
-  client_pass: '421b33f96904dc8b3f0da735194f977ef4d26d65',
+  client_id: process.env.VUE_APP_CLIENT_ID,
+  client_pass: process.env.VUE_APP_CLIENT_SECRET,
   code: null,
   storage: window.localStorage,
   axios: null,
