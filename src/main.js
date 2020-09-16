@@ -6,6 +6,8 @@ import router from './router'
 import axios from 'axios'
 import authInfo from '@/common/authInfo'
 
+import './registerServiceWorker'
+
 // Configure OAuth2 access token for authorization: strava_oauth
 
 Vue.prototype.$http = axios
