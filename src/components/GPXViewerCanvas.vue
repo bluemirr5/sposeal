@@ -1,5 +1,39 @@
 <template>
   <div>
+    <v-dialog
+        v-model="dialog"
+        width="500"
+    >
+      <v-card>
+        <v-card-title class="headline grey lighten-2">
+          다운로드하시겠습니까?
+        </v-card-title>
+
+        <v-card-text>
+          <img ref="downImg" v-bind:src="targetHref" width="100%">
+          <v-btn
+              color="blue darken-2"
+              dark
+              tag="a" ref="downATag" :link="true" :href="targetHref">
+            Download
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-btn
+        style="margin-top: 80px"
+        v-if="fab"
+        v-model="fab"
+        color="blue darken-2"
+        dark
+        fab
+        absolute
+        top
+        right
+        @click="getOpenDialog"
+    >
+      <v-icon>mdi-download</v-icon>
+    </v-btn>
     <canvas ref="mcanvas" style="width: 100%; padding: 0px;"
             @mousemove.stop.prevent="drag"
             @mousedown.stop.prevent="isDrag = true"
@@ -43,10 +77,15 @@ export default {
       }
     },
   },
+
   data: () => ({
     mCanvas: null, ctx: null, targetImg: null, isDrag: false,
     position: {x: 0, y:0},
+    fab: false,
+    dialog: false,
+    targetHref: null
   }),
+
   mounted() {
     this.mCanvas = this.$refs['mcanvas']
     this.drawTotal()
@@ -150,6 +189,7 @@ export default {
       ctx.stroke()
       ctx.closePath()
     },
+
     readImageFile(imgFile) {
       const imgObj = new Image();
       const reader = new FileReader()
@@ -161,20 +201,38 @@ export default {
       }
       if(imgFile) reader.readAsDataURL(imgFile)
     },
+
     async drawImg(targetImage) {
       this.ctx.drawImage(targetImage, 0, 0)
       await this.$nextTick()
       const longEdge = Math.max(this.mCanvas.width, this.mCanvas.height)
       this.viewOption.svgDimensions = longEdge/5
     },
+
+    getOpenDialog() {
+      this.dialog = true
+      this.$nextTick(() => {
+        const aTag = this.$refs['downATag']
+        window.console.log(aTag)
+        let dataURL = this.mCanvas.toDataURL('image/png');
+        dataURL = dataURL.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
+        dataURL = dataURL.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
+        this.targetHref = dataURL
+        aTag.$el.download = 'r2ne_' + (new Date()).getTime() + '.png'
+      })
+    },
     download() {
       let dataURL = this.mCanvas.toDataURL('image/png');
       dataURL = dataURL.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
       dataURL = dataURL.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
-      const aTag = document.createElement('a');
-      aTag.download = 'from_canvas.png';
-      aTag.href = dataURL;
-      aTag.click();
+      const aTag = this.$refs['downatag']
+      aTag.download = 'r2ne_' + (new Date()).getTime() + '.png'
+      aTag.href = dataURL
+      aTag.click()
+      // const aTag = document.createElement('a');
+      // aTag.download = 'from_canvas.png';
+      // aTag.href = dataURL;
+      // aTag.click();
     },
   },
   computed: {
@@ -198,8 +256,13 @@ export default {
       handler: function() { this.drawTotal(this.position.x, this.position.y) }
     },
     targetImg: function(n) {
-      if(n) this.$emit('downloadable', true)
-      else this.$emit('downloadable', false)
+      if(n) {
+        this.$emit('downloadable', true)
+        this.fab = true
+      }
+      else {
+        this.$emit('downloadable', false)
+      }
     }
   }
 }

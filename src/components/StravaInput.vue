@@ -1,21 +1,23 @@
 <template>
   <div>
-    <v-btn v-if="!hasToken" @click="linkStrava">Strava Login</v-btn>
+    <v-btn v-if="!hasToken" @click="linkStrava" style="color: #FC5200">Strava Login</v-btn>
     <v-dialog v-else  v-model="dialog" scrollable max-width="300px">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
             v-bind="attrs"
             v-on="on"
+            color="#FC5200"
+            dark
             @click="loadActivity"
         >
-          Select Activity
+          Strava Activity
         </v-btn>
       </template>
       <v-card>
-        <v-card-title>Select Activity</v-card-title>
+        <v-card-title style="background-color: #FC5200; color: white">Select Activity</v-card-title>
         <v-divider></v-divider>
         <v-card-text style="height: 300px;" v-if="items">
-          <v-list rounded dense>
+          <v-list rounded dense >
             <v-list-item-group v-model="item" color="primary">
               <v-list-item
                   v-for="(item, i) in items"

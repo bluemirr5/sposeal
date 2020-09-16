@@ -2,14 +2,9 @@
   <v-app>
     <v-app-bar app color="primary" dark >
       SpoSeal
-      <v-spacer></v-spacer>
-      <v-btn v-if="isDownload" @click="download">
-        Save
-        <v-icon>mdi-content-save</v-icon>
-      </v-btn>
     </v-app-bar>
     <v-main >
-      <router-view ref="router" @downloadable="downCheck" />
+      <router-view ref="router" />
     </v-main>
   </v-app>
 </template>
@@ -21,14 +16,6 @@ export default {
   data: () => ({
     isDownload: false
   }),
-  methods: {
-    downCheck(flag) {
-      this.isDownload = flag
-    },
-    download() {
-      this.$refs['router'].download()
-    }
-  }
 }
 </script>
 

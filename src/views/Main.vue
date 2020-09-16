@@ -24,7 +24,6 @@
           :do-time="gpxInfo.doTime"
           :line-data="gpxInfo.lineData"
           :view-option="viewOption"
-          @downloadable="downloadChange"
       />
       <gpx-view-option-picker
           v-if="gpxInfo"
@@ -46,6 +45,7 @@ import stravaInput from '@/components/StravaInput'
 import gpxInput from '@/components/GPXInput'
 import gpxViewerCanvas from '@/components/GPXViewerCanvas'
 import gpxViewOptionPicker from '@/components/GPXViewOptionPicker'
+import caches from '@/common/Cache'
 
 export default {
   name: 'Main',
@@ -59,12 +59,19 @@ export default {
       isGradation: true,
       fontFamily: 'kimue'
     },
+    fab: null,
   }),
+  created() {
+    if(caches.getFirstColor())
+      this.viewOption.firstColor = caches.getFirstColor()
+    if(caches.getSecondColor())
+      this.viewOption.secondColor = caches.getSecondColor()
+    if(caches.getFontFamily())
+      this.viewOption.fontFamily = caches.getFontFamily()
+  },
   methods: {
     loadedGPXInfo(gpxInfo) { this.gpxInfo = gpxInfo },
-    downloadChange(flag) { this.$emit('downloadable', flag ) },
-    download() { this.$refs['canvasViewer'].download() }
-  }
+  },
 };
 </script>
 

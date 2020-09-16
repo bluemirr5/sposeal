@@ -62,6 +62,11 @@
 
     <v-dialog v-model="dialogOpenFlag" width="500" >
       <v-card>
+
+        <v-card-title class="headline grey lighten-2">
+
+        </v-card-title>
+
         <v-card-text>
           <v-spacer style="margin-top: 30px"/>
           <v-color-picker
@@ -80,6 +85,8 @@
 </template>
 
 <script>
+import caches from '@/common/Cache'
+
 export default {
   name: "GPXViewOptionPicker",
   model: {
@@ -127,8 +134,10 @@ export default {
     selectColor() {
       if(this.selectedColorIdx === 0) {
         this.outputOption.firstColor = this.selectedColor
+        caches.setFirstColor(this.selectedColor)
       } else {
         this.outputOption.secondColor = this.selectedColor
+        caches.setSecondColor(this.selectedColor)
       }
     }
   },
@@ -138,6 +147,9 @@ export default {
         this.selectColor()
         this.$emit('output', this.outputOption)
       }
+    },
+    'outputOption.fontFamily': function (n) {
+      caches.setFontFamily(n)
     }
   }
 }
