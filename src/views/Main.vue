@@ -76,9 +76,30 @@ export default {
 </script>
 
 <style>
-  @font-face { font-family: "kimue"; src: url("../assets/fonts/kimue.ttf") format("truetype"); }
-  @font-face { font-family: "ainmom"; src: url("../assets/fonts/ainmom.ttf") format("truetype"); }
-  @font-face { font-family: "zumggolche"; src: url("../assets/fonts/zumggolche.ttf") format("truetype"); }
-  @font-face { font-family: "amsterdam"; src: url("../assets/fonts/amsterdam.ttf") format("truetype"); }
-  @font-face { font-family: "jungeunche"; src: url("../assets/fonts/jungeunche.ttf") format("truetype"); }
+  /*@font-face { font-family: "kimue"; src: url("../assets/fonts/kimue.ttf") format("truetype"); }*/
+  /*@font-face { font-family: "ainmom"; src: url("../assets/fonts/ainmom.ttf") format("truetype"); }*/
+  /*@font-face { font-family: "zumggolche"; src: url("../assets/fonts/zumggolche.ttf") format("truetype"); }*/
+  /*@font-face { font-family: "amsterdam"; src: url("../assets/fonts/amsterdam.ttf") format("truetype"); }*/
+  /*@font-face { font-family: "jungeunche"; src: url("../assets/fonts/jungeunche.ttf") format("truetype"); }*/
+
+  @font-face {
+    font-family: "kimue";
+    src: url("https://firebasestorage.googleapis.com/v0/b/sposeal.appspot.com/o/kimue.ttf?alt=media&token=8177103b-c18a-4813-94ae-2c13391fa7d1") format("truetype");
+  }
+  @font-face {
+    font-family: "ainmom";
+    src: url("https://firebasestorage.googleapis.com/v0/b/sposeal.appspot.com/o/ainmom.ttf?alt=media&token=070bdb78-05c6-4f47-9d47-0fffebf00c5e") format("truetype");
+  }
+  @font-face {
+    font-family: "zumggolche";
+    src: url("https://firebasestorage.googleapis.com/v0/b/sposeal.appspot.com/o/zumggolche.ttf?alt=media&token=901a0f05-8ec0-48f5-88ea-0573576e096d") format("truetype");
+  }
+  @font-face {
+    font-family: "amsterdam";
+    src: url("https://firebasestorage.googleapis.com/v0/b/sposeal.appspot.com/o/amsterdam.ttf?alt=media&token=cb0cbeae-a5dd-4ac8-8db7-ec2a83f0cecc") format("truetype");
+  }
+  @font-face {
+    font-family: "jungeunche";
+    src: url("https://firebasestorage.googleapis.com/v0/b/sposeal.appspot.com/o/jungeunche.ttf?alt=media&token=e3d696b3-43d4-49a4-b934-70bd21079d49") format("truetype");
+  }
 </style>

@@ -4,7 +4,7 @@
         ref="fInput"
         prepend-icon="mdi-crosshairs-gps"
         accept="application/gpx+xml"
-        placeholder="GPX File"
+        placeholder="GPXFile"
         @change="readGPXFile"
         :hide-details="true"
         :dense="true"
