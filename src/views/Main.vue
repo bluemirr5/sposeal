@@ -1,5 +1,26 @@
 <template>
   <div>
+    <v-dialog
+        v-model="fontLoading"
+        hide-overlay
+        persistent
+        width="300"
+    >
+      <v-card
+          color="primary"
+          dark
+      >
+        <v-card-text>
+          폰트 로딩중 입니다 잠시만 기다려주세요.
+          <v-progress-linear
+              indeterminate
+              color="white"
+              class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <div style="padding: 0 10px">
       <div class="d-flex flex-row mb-6" style="margin-bottom: 0 !important;">
         <div class="pa-2" style="padding: 10px">
@@ -60,8 +81,11 @@ export default {
       fontFamily: 'kimue'
     },
     fab: null,
+    fontLoading: true,
   }),
   created() {
+    document.fonts.onloadingdone = () => { this.fontLoading = false }
+
     if(caches.getFirstColor())
       this.viewOption.firstColor = caches.getFirstColor()
     if(caches.getSecondColor())
@@ -76,12 +100,6 @@ export default {
 </script>
 
 <style>
-  /*@font-face { font-family: "kimue"; src: url("../assets/fonts/kimue.ttf") format("truetype"); }*/
-  /*@font-face { font-family: "ainmom"; src: url("../assets/fonts/ainmom.ttf") format("truetype"); }*/
-  /*@font-face { font-family: "zumggolche"; src: url("../assets/fonts/zumggolche.ttf") format("truetype"); }*/
-  /*@font-face { font-family: "amsterdam"; src: url("../assets/fonts/amsterdam.ttf") format("truetype"); }*/
-  /*@font-face { font-family: "jungeunche"; src: url("../assets/fonts/jungeunche.ttf") format("truetype"); }*/
-
   @font-face {
     font-family: "kimue";
     src: url("https://firebasestorage.googleapis.com/v0/b/sposeal.appspot.com/o/kimue.ttf?alt=media&token=8177103b-c18a-4813-94ae-2c13391fa7d1") format("truetype");
