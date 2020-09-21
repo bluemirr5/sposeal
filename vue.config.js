@@ -12,7 +12,7 @@ module.exports = {
     themeColor: '#1976d2',
     msTileColor: '#FFFFFF',
     appleMobileWebAppCapable: 'yes',
-    appleMobileWebAppStatusBarStyle: 'blacK',
+    appleMobileWebAppStatusBarStyle: 'black',
     start_url: '/?source=pwa',
     display: 'standalone',
 
