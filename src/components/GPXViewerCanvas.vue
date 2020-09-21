@@ -96,8 +96,8 @@ export default {
         const rect = evt.target.getBoundingClientRect()
         let x, y
         if(evt.targetTouches && evt.targetTouches[0]) {
-          x = evt.targetTouches[0].pageX - rect.left
-          y = evt.targetTouches[0].pageY - rect.top
+          x = evt.targetTouches[0].clientX - rect.left
+          y = evt.targetTouches[0].clientY - rect.top
         } else {
           x = evt.offsetX
           y = evt.offsetY
