@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["https://sposeal.web.app"],
+    "origin": ["https://sposeal.web.app", "http://localhost:8080"],
     "method": ["GET"],
     "maxAgeSeconds": 3600
   }
