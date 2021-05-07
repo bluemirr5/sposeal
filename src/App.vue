@@ -13,9 +13,6 @@
 
 export default {
   name: 'App',
-  data: () => ({
-    isDownload: false
-  }),
 }
 </script>
 
