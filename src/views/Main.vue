@@ -58,6 +58,9 @@
       <span style="font-family: amsterdam,serif"></span>
       <span style="font-family: jungeunche,serif"></span>
     </div>
+    <div v-if="fontLoadingErr" style="color: red">
+      {{ fontLoadingErr }}
+    </div>
   </div>
 </template>
 
@@ -82,9 +85,12 @@ export default {
     },
     fab: null,
     fontLoading: true,
+    fontLoadingErr: '',
   }),
   created() {
     document.fonts.onloadingdone = () => { this.fontLoading = false }
+    document.fonts.onloadingerror = (e) => { this.fontLoadingErr = 'error: '+e }
+    document.fonts.ready.then(() => { this.fontLoading = false })
 
     if(caches.getFirstColor())
       this.viewOption.firstColor = caches.getFirstColor()
